@@ -22,7 +22,7 @@ const RefreshIcon = () => (
 );
 
 const Wrapped = () => {
-  const images = Array.from({ length: 12 }, (_, i) => `/images/${i + 1}.png`);
+  const images = Array.from({ length: 14 }, (_, i) => `/images/${i + 1}.png`);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
