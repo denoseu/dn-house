@@ -78,43 +78,54 @@ const Wrapped = () => {
   }, [isPaused, handleNext, slideDuration, showReplay]);
 
   const handleTouchStart = (e) => {
-    const touch = e.touches ? e.touches[0] : e;
+    if (!e.touches || e.touches.length === 0) return; // Safeguard
+  
+    const touch = e.touches[0]; // Ensure the first touch point is used
     setTouchStartTime(Date.now());
     setTouchStartX(touch.clientX);
     setIsPaused(true);
   };
   
+  const handleTouchMove = (e) => {
+    if (!e.touches || e.touches.length === 0) return; // Safeguard
+  
+    const touch = e.touches[0];
+    const touchDistance = touch.clientX - touchStartX;
+  
+    // Determine if movement should trigger a swipe action
+    if (Math.abs(touchDistance) > 50) {
+      if (touchDistance > 0) {
+        handlePrevious(); // Swipe right
+      } else {
+        handleNext(); // Swipe left
+      }
+      setTouchStartX(touch.clientX); // Reset start position for smoother swipes
+      setTouchStartTime(Date.now()); // Reset time to prevent rapid firing
+    }
+  };
+  
   const handleTouchEnd = (e) => {
-    const touchEnd = e.changedTouches ? e.changedTouches[0] : e;
+    if (!e.changedTouches || e.changedTouches.length === 0) return; // Safeguard
+  
     const touchDuration = Date.now() - touchStartTime;
-    const touchDistance = touchEnd.clientX - touchStartX;
+    const touchDistance = e.changedTouches[0].clientX - touchStartX;
   
     setIsPaused(false);
   
-    // Adjust thresholds for better accuracy
-    const isShortTap = touchDuration < 200 && Math.abs(touchDistance) < 30;
-  
-    if (isShortTap) {
-      // Determine left or right tap based on touch location
-      const rect = e.currentTarget.getBoundingClientRect();
-      const isRightSide = touchEnd.clientX > rect.left + rect.width / 2;
+    // Handle short tap (no significant movement or swipe)
+    if (Math.abs(touchDistance) < 30 && touchDuration < 200) {
+      const element = e.currentTarget;
+      const rect = element.getBoundingClientRect();
+      const isRightSide = e.changedTouches[0].clientX > rect.left + rect.width / 2;
   
       if (isRightSide) {
         handleNext();
       } else {
         handlePrevious();
       }
-    } else if (Math.abs(touchDistance) > 50) {
-      // Consider it a swipe if distance is significant
-      if (touchDistance > 0) {
-        handlePrevious(); // Swipe to the right
-      } else {
-        handleNext(); // Swipe to the left
-      }
     }
-  };
+  };  
   
-
   // Swipe handlers with higher threshold and velocity requirement
   const swipeHandlers = useSwipeable({
     onSwipedLeft: handleNext,
@@ -127,10 +138,11 @@ const Wrapped = () => {
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
-      <div 
+      <div
         className="relative w-full h-full max-h-screen bg-black overflow-hidden"
         {...swipeHandlers}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
