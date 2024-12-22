@@ -78,41 +78,39 @@ const Wrapped = () => {
   }, [isPaused, handleNext, slideDuration, showReplay]);
 
   const handleTouchStart = (e) => {
-    if (!e.touches || e.touches.length === 0) return; // Safeguard
+    if (!e.touches || e.touches.length === 0) return;
   
-    const touch = e.touches[0]; // Ensure the first touch point is used
+    const touch = e.touches[0];
     setTouchStartTime(Date.now());
     setTouchStartX(touch.clientX);
     setIsPaused(true);
   };
   
   const handleTouchMove = (e) => {
-    if (!e.touches || e.touches.length === 0) return; // Safeguard
+    if (!e.touches || e.touches.length === 0) return;
   
     const touch = e.touches[0];
     const touchDistance = touch.clientX - touchStartX;
   
-    // Determine if movement should trigger a swipe action
     if (Math.abs(touchDistance) > 50) {
       if (touchDistance > 0) {
-        handlePrevious(); // Swipe right
+        handlePrevious(); // swipe right
       } else {
-        handleNext(); // Swipe left
+        handleNext(); // swipe left
       }
-      setTouchStartX(touch.clientX); // Reset start position for smoother swipes
-      setTouchStartTime(Date.now()); // Reset time to prevent rapid firing
+      setTouchStartX(touch.clientX); // reset start position
+      setTouchStartTime(Date.now()); // reset time to prevent rapid firing
     }
   };
   
   const handleTouchEnd = (e) => {
-    if (!e.changedTouches || e.changedTouches.length === 0) return; // Safeguard
+    if (!e.changedTouches || e.changedTouches.length === 0) return;
   
     const touchDuration = Date.now() - touchStartTime;
     const touchDistance = e.changedTouches[0].clientX - touchStartX;
   
     setIsPaused(false);
   
-    // Handle short tap (no significant movement or swipe)
     if (Math.abs(touchDistance) < 30 && touchDuration < 200) {
       const element = e.currentTarget;
       const rect = element.getBoundingClientRect();
@@ -126,7 +124,6 @@ const Wrapped = () => {
     }
   };  
   
-  // Swipe handlers with higher threshold and velocity requirement
   const swipeHandlers = useSwipeable({
     onSwipedLeft: handleNext,
     onSwipedRight: handlePrevious,
