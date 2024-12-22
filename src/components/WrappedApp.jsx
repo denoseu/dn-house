@@ -27,6 +27,7 @@ const Wrapped = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [touchStartTime, setTouchStartTime] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
   const [showReplay, setShowReplay] = useState(false);
   const slideDuration = 5000;
 
@@ -76,27 +77,27 @@ const Wrapped = () => {
     return () => clearInterval(interval);
   }, [isPaused, handleNext, slideDuration, showReplay]);
 
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: handleNext,
-    onSwipedRight: handlePrevious,
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true
-  });
-
+  // Handle touch interactions
   const handleTouchStart = (e) => {
+    const touch = e.touches ? e.touches[0] : e;
     setTouchStartTime(Date.now());
+    setTouchStartX(touch.clientX);
     setIsPaused(true);
   };
 
   const handleTouchEnd = (e) => {
+    const touchEnd = e.changedTouches ? e.changedTouches[0] : e;
     const touchDuration = Date.now() - touchStartTime;
+    const touchDistance = Math.abs(touchEnd.clientX - touchStartX);
     setIsPaused(false);
     
-    if (touchDuration < 200) {
-      const touchX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+    // Only handle as tap if:
+    // 1. Touch duration is short (< 200ms)
+    // 2. Touch didn't move much (< 10px)
+    if (touchDuration < 200 && touchDistance < 10) {
       const element = e.currentTarget;
       const rect = element.getBoundingClientRect();
-      const isRightSide = touchX > rect.left + rect.width / 2;
+      const isRightSide = touchEnd.clientX > (rect.left + rect.width / 2);
       
       if (isRightSide) {
         handleNext();
@@ -105,6 +106,16 @@ const Wrapped = () => {
       }
     }
   };
+
+  // Swipe handlers with higher threshold and velocity requirement
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: handleNext,
+    onSwipedRight: handlePrevious,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true,
+    swipeDuration: 500,
+    minDistance: 50
+  });
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -137,7 +148,7 @@ const Wrapped = () => {
           ))}
         </div>
 
-        {/* current image */}
+        {/* Current Image */}
         <div className="relative w-full h-full">
           <img
             src={images[currentIndex]}
@@ -146,13 +157,13 @@ const Wrapped = () => {
           />
         </div>
 
-        {/* TOUUCHCH */}
+        {/* Touch Areas */}
         <div className="absolute inset-0 z-10 flex">
           <div className="w-1/2 h-full" />
           <div className="w-1/2 h-full" />
         </div>
 
-        {/* replay button*/}
+        {/* Replay Button */}
         {showReplay && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-30">
             <button
