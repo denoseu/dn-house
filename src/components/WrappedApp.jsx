@@ -77,35 +77,43 @@ const Wrapped = () => {
     return () => clearInterval(interval);
   }, [isPaused, handleNext, slideDuration, showReplay]);
 
-  // Handle touch interactions
   const handleTouchStart = (e) => {
     const touch = e.touches ? e.touches[0] : e;
     setTouchStartTime(Date.now());
     setTouchStartX(touch.clientX);
     setIsPaused(true);
   };
-
+  
   const handleTouchEnd = (e) => {
     const touchEnd = e.changedTouches ? e.changedTouches[0] : e;
     const touchDuration = Date.now() - touchStartTime;
-    const touchDistance = Math.abs(touchEnd.clientX - touchStartX);
+    const touchDistance = touchEnd.clientX - touchStartX;
+  
     setIsPaused(false);
-    
-    // Only handle as tap if:
-    // 1. Touch duration is short (< 200ms)
-    // 2. Touch didn't move much (< 10px)
-    if (touchDuration < 200 && touchDistance < 10) {
-      const element = e.currentTarget;
-      const rect = element.getBoundingClientRect();
-      const isRightSide = touchEnd.clientX > (rect.left + rect.width / 2);
-      
+  
+    // Adjust thresholds for better accuracy
+    const isShortTap = touchDuration < 200 && Math.abs(touchDistance) < 30;
+  
+    if (isShortTap) {
+      // Determine left or right tap based on touch location
+      const rect = e.currentTarget.getBoundingClientRect();
+      const isRightSide = touchEnd.clientX > rect.left + rect.width / 2;
+  
       if (isRightSide) {
         handleNext();
       } else {
         handlePrevious();
       }
+    } else if (Math.abs(touchDistance) > 50) {
+      // Consider it a swipe if distance is significant
+      if (touchDistance > 0) {
+        handlePrevious(); // Swipe to the right
+      } else {
+        handleNext(); // Swipe to the left
+      }
     }
   };
+  
 
   // Swipe handlers with higher threshold and velocity requirement
   const swipeHandlers = useSwipeable({
