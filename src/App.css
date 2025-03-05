@@ -10,21 +10,15 @@
 }
 
 body {
-  /* Resize cursor: width height */
-  cursor: url('/public/images/mouse-normal.webp'), auto;
-}
-
-/* Default cursor */
-body {
-  cursor: url('/public/images/mouse-normal.webp'), auto;
+  cursor: url('/public/images/mouse-normal.svg'), auto;
 }
 
 /* Cursor when hovering over clickable elements */
 a, button, .clickable {
-  cursor: url('/public/images/mouse-clicked.webp'), pointer;
+  cursor: url('/public/images/mouse-clicked.svg'), pointer;
 }
 
 /* Cursor when clicking/active */
 a:active, button:active, .clickable:active {
-  cursor: url('/public/images/mouse-clicked.webp'), pointer;
+  cursor: url('/public/images/mouse-clicked.svg'), pointer;
 }
