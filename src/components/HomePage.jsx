@@ -53,7 +53,7 @@ const HomePage = () => {
     <motion.div 
       initial="hidden"
       animate="visible"
-      className="flex flex-col justify-center items-center h-screen bg-gray-100"
+      className="flex flex-col justify-center items-center h-screen bg-gray-50"
     >
       {/* Title */}
       <motion.h1 

@@ -34,7 +34,7 @@ const LetterPage = () => {
     <motion.div 
       initial="hidden"
       animate="visible"
-      className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4"
+      className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4"
     >
       {/* Title */}
       <motion.h1 
