@@ -6,53 +6,52 @@ const LetterPage = () => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
-  const fadeIn = {
+  // Animations
+  const fadeIn = (delay = 0) => ({
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.6 } }
-  };
-  
-  const fadeZoom = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.6 } }
-  };
-  
-  const fadeRight = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.6 } }
-  };
-  
-  const fadeLeft = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.6 } }
-  };  
+    visible: { opacity: 1, transition: { duration: 0.8, delay } }
+  });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4"
+    >
+      {/* Title */}
+      <motion.h1 
+        variants={fadeIn(0.1)}
+        className="text-4xl font-dongdong text-black text-center mt-10"
+      >
+        Write us a letter!
+      </motion.h1>
 
-        <motion.h1 
-            variants={fadeZoom}
-            className="text-4xl font-dongdong text-black text-center mt-10"
-        >
-            Write us a letter!
-        </motion.h1>
+      {/* Subtitle */}
+      <motion.p
+        variants={fadeIn(0.5)} // Appears after h1
+        className="text-xl font-dongdong text-black text-center mt-4"
+      >
+        This will later appear in the guestbook :)
+      </motion.p>
 
-        <motion.p
-            variants={fadeRight}
-            className="text-xl font-dongdong text-black text-center mt-4"
-        >
-            This will later appear in the guestbook :)
-        </motion.p>
-
-      <div className="relative w-full max-w-md sm:max-w-[800px] h-auto">
-        {/* BG Image */}
-        <img 
+      {/* Email Input Box */}
+      <motion.div 
+        variants={fadeIn(0.8)} // Appears after p
+        className="relative w-full max-w-md sm:max-w-[800px] h-auto mt-6"
+      >
+        {/* Background Image */}
+        <motion.img 
           src="/images/mail/input-box.svg" 
-          alt="Email window" 
+          alt="Email window"
           className="w-full h-auto"
+          variants={fadeIn(0.9)} // Image appears after p
         />
 
-        {/* Inputs */}
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        {/* Input Fields */}
+        <motion.div 
+          variants={fadeIn(1.2)} // Inputs appear after image
+          className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        >
           <input
             type="text"
             value={to}
@@ -79,9 +78,9 @@ const LetterPage = () => {
               text-gray-700 text-sm md:text-lg font-dongdong resize-none pointer-events-auto
               md:left-[16%] md:top-[210px] md:w-[520px]"
           />
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

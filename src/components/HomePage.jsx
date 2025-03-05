@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from 'react-router-dom';
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -29,19 +30,22 @@ const HomePage = () => {
       defaultImage: '/images/mailbox1.webp',
       hoverImage: '/images/mailbox2.webp',
       alt: 'mailbox',
-      label: 'Letter'
+      label: 'Letter',
+      path: '/letter'
     },
     {
       defaultImage: '/images/book1.webp',
       hoverImage: '/images/book2.webp',
       alt: 'book',
-      label: 'Guestbook'
+      label: 'Guestbook',
+      path: '/guestbook'
     },
     {
       defaultImage: '/images/spoon1.webp',
       hoverImage: '/images/spoon2.webp',
       alt: 'spoon',
-      label: 'Menu'
+      label: 'Menu',
+      path: '/menu'
     }
   ];
 
@@ -82,23 +86,25 @@ const HomePage = () => {
             variants={fadeIn}
             className="flex flex-col items-center space-y-2"
           >
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className={`
-                w-32 h-32 
-                bg-cover bg-center 
-                transition-all duration-300 
-                transform 
-                ease-in-out
-                rounded-lg
-              `}
-              style={{ 
-                backgroundImage: `url('${hoveredButton === index ? button.hoverImage : button.defaultImage}')` 
-              }}
-              onMouseEnter={() => setHoveredButton(index)}
-              onMouseLeave={() => setHoveredButton(null)}
-            />
+            <Link to={button.path}>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className={`
+                  w-32 h-32 
+                  bg-cover bg-center 
+                  transition-all duration-300 
+                  transform 
+                  ease-in-out
+                  rounded-lg
+                `}
+                style={{ 
+                  backgroundImage: `url('${hoveredButton === index ? button.hoverImage : button.defaultImage}')` 
+                }}
+                onMouseEnter={() => setHoveredButton(index)}
+                onMouseLeave={() => setHoveredButton(null)}
+              />
+            </Link>
             <motion.span 
               variants={fadeIn}
               className="text-lg font-dongdong text-black"
