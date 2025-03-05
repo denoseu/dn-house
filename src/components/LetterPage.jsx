@@ -5,12 +5,30 @@ const LetterPage = () => {
   const [to, setTo] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [isSendHovered, setIsSendHovered] = useState(false);
+  const [isTrashHovered, setIsTrashHovered] = useState(false);
 
   // Animations
   const fadeIn = (delay = 0) => ({
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.8, delay } }
   });
+
+  // Button hover and zoom animation
+  const buttonVariants = {
+    initial: { scale: 1 },
+    hover: { 
+      scale: 1.1,
+      transition: { duration: 0.3 }
+    }
+  };
+
+  // Reset input fields
+  const handleReset = () => {
+    setTo('');
+    setSubject('');
+    setMessage('');
+  };
 
   return (
     <motion.div 
@@ -28,7 +46,7 @@ const LetterPage = () => {
 
       {/* Subtitle */}
       <motion.p
-        variants={fadeIn(0.5)} // Appears after h1
+        variants={fadeIn(0.5)}
         className="text-xl font-dongdong text-black text-center mt-4"
       >
         This will later appear in the guestbook :)
@@ -36,7 +54,7 @@ const LetterPage = () => {
 
       {/* Email Input Box */}
       <motion.div 
-        variants={fadeIn(0.8)} // Appears after p
+        variants={fadeIn(0.8)}
         className="relative w-full max-w-md sm:max-w-[800px] h-auto mt-6"
       >
         {/* Background Image */}
@@ -44,12 +62,12 @@ const LetterPage = () => {
           src="/images/mail/input-box.svg" 
           alt="Email window"
           className="w-full h-auto"
-          variants={fadeIn(0.9)} // Image appears after p
+          variants={fadeIn(0.9)}
         />
 
         {/* Input Fields */}
         <motion.div 
-          variants={fadeIn(1.2)} // Inputs appear after image
+          variants={fadeIn(1.2)}
           className="absolute top-0 left-0 w-full h-full pointer-events-none"
         >
           <input
@@ -79,6 +97,39 @@ const LetterPage = () => {
               md:left-[16%] md:top-[210px] md:w-[520px]"
           />
         </motion.div>
+
+        {/* Send Button */}
+        <motion.button
+          variants={buttonVariants}
+          initial="initial"
+          whileHover="hover"
+          className="absolute bottom-[20%] left-[15%] md:bottom-[20%] md:left-[15%] z-10"
+          onMouseEnter={() => setIsSendHovered(true)}
+          onMouseLeave={() => setIsSendHovered(false)}
+        >
+          <img 
+            src={isSendHovered ? "/images/mail/send.svg" : "/images/mail/send.svg"} 
+            alt="Send" 
+            className="w-16 md:w-32"
+          />
+        </motion.button>
+
+        {/* Trash Button */}
+        <motion.button
+          variants={buttonVariants}
+          initial="initial"
+          whileHover="hover"
+          className="absolute bottom-[23%] right-[16%] md:bottom-[23%] md:right-[18%] z-10"
+          onClick={handleReset}
+          onMouseEnter={() => setIsTrashHovered(true)}
+          onMouseLeave={() => setIsTrashHovered(false)}
+        >
+          <img 
+            src={isTrashHovered ? "/images/mail/trash2.svg" : "/images/mail/trash1.svg"} 
+            alt="Reset" 
+            className="w-12 md:w-20"
+          />
+        </motion.button>
       </motion.div>
     </motion.div>
   );
