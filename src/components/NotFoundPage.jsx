@@ -8,46 +8,45 @@ const NotFoundPage = () => {
     <>
       <title>404 | DN's House</title>
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-        {/* Banner */}
-        <img 
-          src="/images/404/404.webp" 
-          alt="404 Number" 
-          className="max-w-full mb-6 md:max-w-xl"
-        />
-
-        {/* Main Content */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold font-dongdong text-gray-800">
-            Oaoa! Oaa aoaooooa!
-          </h1>
-          
-          <p className="text-lg text-gray-600 font-dongdong max-w-lg mx-auto">
-            Bipbop has searched through 192913912010320132013131 websites, but this page is nowhere to be found.
-          </p>
-
-          {/* Return Home Button */}
-          <Link 
-            to="/" 
-            className="inline-block relative"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
+        <div className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between">
+          <div className="text-center md:max-w-lg space-y-6 md:mr-8 flex flex-col items-center">
             <img 
-              src={isHovering ? "/images/404/home.webp" : "/images/404/home.webp"} 
-              alt="Return Home" 
-              className={`w-56 md:w-64 h-auto mt-6 transition-transform duration-300 ${
-                isHovering ? 'scale-105' : 'scale-100'
-              }`}
+                src="/images/404/404.webp" 
+                alt="404 Number" 
+                className="max-w-full md:max-w-xl mx-auto"
             />
-          </Link>
 
-          {/* 404 Image */}
-          <img 
-            src="/images/404/bipbop-404.webp" 
-            alt="404" 
-            className="mx-auto max-w-full md:max-w-md my-6"
-          />
+            <h1 className="text-4xl font-bold font-dongdong text-gray-800">
+                Oaoa! Oaa aoaooooa!
+            </h1>
 
+            <p className="text-lg text-gray-600 font-dongdong max-w-lg">
+                Bipbop has searched through 192913912010320132013131 websites, but this page is nowhere to be found.
+            </p>
+
+            <Link 
+                to="/" 
+                className="inline-block relative"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+            >
+                <img 
+                src={isHovering ? "/images/404/home.webp" : "/images/404/home.webp"} 
+                alt="Return Home" 
+                className={`w-56 md:w-64 h-auto transition-transform duration-300 ${
+                    isHovering ? 'scale-105' : 'scale-100'
+                }`}
+                />
+            </Link>
+          </div>
+
+          <div className="flex flex-1 items-center justify-center h-full">
+            <img 
+              src="/images/404/bipbop-404.webp" 
+              alt="404" 
+              className="max-w-full md:max-w-xl"
+            />
+          </div>
         </div>
       </div>
     </>
