@@ -13,7 +13,7 @@ const Navbar = () => {
     
     if (path === '/') return 'Home';
     if (path === '/letter') return 'Letter';
-    if (path === '/guestbook') return 'GuestBook';
+    if (path === '/guestbook') return 'Guestbook';
     if (path === '/menu') return 'Menu';
     if (path === '/shop') return 'Shop';
     
@@ -45,7 +45,7 @@ const Navbar = () => {
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "Letter", path: "/letter" },
-    { name: "GuestBook", path: "/guestbook" },
+    { name: "Guestbook", path: "/guestbook" },
     { name: "Menu", path: "/menu" },
     { name: "Shop", path: "/shop" },
   ];
