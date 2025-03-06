@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from 'react-router-dom';
+import Navbar from "../components/Navbar"; // Adjust the path as needed
 
 const fadeIn = {
   hidden: { opacity: 0 },
@@ -50,71 +51,75 @@ const HomePage = () => {
   ];
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="visible"
-      className="flex flex-col justify-center items-center h-screen bg-gray-50"
-    >
-      {/* Title */}
-      <motion.h1 
-        variants={fadeZoom}
-        className="text-4xl font-louis text-black text-center"
-      >
-        Welcome to
-      </motion.h1>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
       
-      {/* Banner Image */}
       <motion.div 
-        variants={fadeRight}
-        className="w-full max-w-4xl pb-6"
+        initial="hidden"
+        animate="visible"
+        className="flex flex-col justify-center items-center min-h-[calc(100vh-80px)]"
       >
-        <img 
-          src="/images/header.webp" 
-          alt="header" 
-          className="w-full h-auto object-cover rounded-lg"
-        />
-      </motion.div>
+        {/* Title */}
+        <motion.h1 
+          variants={fadeZoom}
+          className="text-4xl font-louis text-black text-center"
+        >
+          Welcome to
+        </motion.h1>
+        
+        {/* Banner Image */}
+        <motion.div 
+          variants={fadeRight}
+          className="w-full max-w-4xl pb-6"
+        >
+          <img 
+            src="/images/header.webp" 
+            alt="header" 
+            className="w-full h-auto object-cover rounded-lg"
+          />
+        </motion.div>
 
-      {/* Menu Buttons */}
-      <motion.div 
-        variants={fadeLeft}
-        className="grid grid-cols-3 gap-6"
-      >
-        {buttons.map((button, index) => (
-          <motion.div 
-            key={index} 
-            variants={fadeIn}
-            className="flex flex-col items-center space-y-2"
-          >
-            <Link to={button.path}>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className={`
-                  w-32 h-32 
-                  bg-cover bg-center 
-                  transition-all duration-300 
-                  transform 
-                  ease-in-out
-                  rounded-lg
-                `}
-                style={{ 
-                  backgroundImage: `url('${hoveredButton === index ? button.hoverImage : button.defaultImage}')` 
-                }}
-                onMouseEnter={() => setHoveredButton(index)}
-                onMouseLeave={() => setHoveredButton(null)}
-              />
-            </Link>
-            <motion.span 
+        {/* Menu Buttons */}
+        <motion.div 
+          variants={fadeLeft}
+          className="grid grid-cols-3 gap-6"
+        >
+          {buttons.map((button, index) => (
+            <motion.div 
+              key={index} 
               variants={fadeIn}
-              className="text-lg font-louis text-black"
+              className="flex flex-col items-center space-y-2"
             >
-              {button.label}
-            </motion.span>
-          </motion.div>
-        ))}
+              <Link to={button.path}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`
+                    w-32 h-32 
+                    bg-cover bg-center 
+                    transition-all duration-300 
+                    transform 
+                    ease-in-out
+                    rounded-lg
+                  `}
+                  style={{ 
+                    backgroundImage: `url('${hoveredButton === index ? button.hoverImage : button.defaultImage}')` 
+                  }}
+                  onMouseEnter={() => setHoveredButton(index)}
+                  onMouseLeave={() => setHoveredButton(null)}
+                />
+              </Link>
+              <motion.span 
+                variants={fadeIn}
+                className="text-lg font-louis text-black"
+              >
+                {button.label}
+              </motion.span>
+            </motion.div>
+          ))}
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 

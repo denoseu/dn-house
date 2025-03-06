@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useGesture } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
-import Navbar from "../components/NavigationBar";
+import Navbar from "../components/Navbar";
 import Postcard from "../components/Postcard";
 
 const MenuPage = () => {
@@ -252,7 +252,6 @@ const MenuPage = () => {
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-gray-100">
-      {/* navbar */}
       <div className="sticky top-0 z-50">
         <Navbar />
       </div>

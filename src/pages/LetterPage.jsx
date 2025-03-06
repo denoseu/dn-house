@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
+import Navbar from "../components/Navbar";
 
 const LetterPage = () => {
   const [to, setTo] = useState('');
@@ -32,11 +33,13 @@ const LetterPage = () => {
 
   return (
     <>
-      <title>Letter Us | DN's House</title>
+      <title>Letter Us</title>
+      <Navbar />
+      
       <motion.div 
         initial="hidden"
         animate="visible"
-        className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4"
+        className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-50 p-4"
       >
         {/* Title */}
         <motion.h1 
