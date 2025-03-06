@@ -5,6 +5,7 @@
   "dependencies": {
     "@react-spring/web": "^9.7.5",
     "@use-gesture/react": "^10.3.1",
+    "ajv": "^8.17.1",
     "cra-template": "1.2.0",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.477.0",
