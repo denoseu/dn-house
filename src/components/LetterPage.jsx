@@ -41,7 +41,7 @@ const LetterPage = () => {
         {/* Title */}
         <motion.h1 
           variants={fadeIn(0.1)}
-          className="text-4xl font-dongdong text-black text-center mt-10"
+          className="text-4xl font-louis text-black text-center mt-10"
         >
           Write us a letter!
         </motion.h1>
@@ -49,7 +49,7 @@ const LetterPage = () => {
         {/* Subtitle */}
         <motion.p
           variants={fadeIn(0.5)}
-          className="text-xl font-dongdong text-black text-center mt-4"
+          className="text-xl font-louis text-black text-center mt-4"
         >
           This will later appear in the guestbook :)
         </motion.p>
@@ -78,7 +78,7 @@ const LetterPage = () => {
               onChange={(e) => setTo(e.target.value)}
               placeholder="To"
               className="absolute top-[46px] left-[23%] w-[70%] bg-transparent border-none focus:outline-none 
-                text-gray-700 text-sm md:text-lg font-dongdong pointer-events-auto
+                text-gray-700 text-sm md:text-lg font-louis pointer-events-auto
                 md:top-[115px] md:left-[23%] md:w-[80%]"
             />
             <input
@@ -87,7 +87,7 @@ const LetterPage = () => {
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Subject"
               className="absolute top-[66px] left-[33%] w-[70%] bg-transparent border-none focus:outline-none 
-                text-gray-700 text-sm md:text-lg font-dongdong pointer-events-auto
+                text-gray-700 text-sm md:text-lg font-louis pointer-events-auto
                 md:left-[33%] md:top-[157px] md:w-[80%]"
             />
             <textarea
@@ -95,7 +95,7 @@ const LetterPage = () => {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Write your message..."
               className="absolute top-[28%] left-[16%] w-[65%] md:w-[65%] h-[35%] md:h-[40%] bg-transparent border-none focus:outline-none 
-                text-gray-700 text-sm md:text-lg font-dongdong resize-none pointer-events-auto
+                text-gray-700 text-sm md:text-lg font-louis resize-none pointer-events-auto
                 md:left-[16%] md:top-[210px] md:w-[520px]"
             />
           </motion.div>

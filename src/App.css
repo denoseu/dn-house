@@ -9,6 +9,48 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'louis';
+  src: url('/src/assets/fonts/Louis\ George\ Cafe.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'louis';
+  src: url('/src/assets/fonts/Louis\ George\ Cafe\ Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'louis';
+  src: url('/src/assets/fonts/Louis\ George\ Cafe\ Bold\ Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'louis';
+  src: url('/src/assets/fonts/Louis\ George\ Cafe\ Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'louis';
+  src: url('/src/assets/fonts/Louis\ George\ Cafe\ Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'louis';
+  src: url('/src/assets/fonts/Louis\ George\ Cafe\ Light\ Italic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+}
+
 body {
   cursor: url('/public/images/mouse-normal.svg'), auto;
 }

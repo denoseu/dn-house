@@ -16,11 +16,11 @@ const NotFoundPage = () => {
                 className="max-w-full md:max-w-xl mx-auto"
             />
 
-            <h1 className="text-4xl font-bold font-dongdong text-gray-800">
+            <h1 className="text-4xl font-bold font-louis text-gray-800">
                 Oaoa! Oaa aoaooooa!
             </h1>
 
-            <p className="text-lg text-gray-600 font-dongdong max-w-lg">
+            <p className="text-lg text-gray-600 font-louis max-w-lg">
                 Bipbop has searched through 192913912010320132013131 websites, but this page is nowhere to be found.
             </p>
 

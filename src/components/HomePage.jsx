@@ -58,7 +58,7 @@ const HomePage = () => {
       {/* Title */}
       <motion.h1 
         variants={fadeZoom}
-        className="text-4xl font-dongdong text-black text-center"
+        className="text-4xl font-louis text-black text-center"
       >
         Welcome to
       </motion.h1>
@@ -107,7 +107,7 @@ const HomePage = () => {
             </Link>
             <motion.span 
               variants={fadeIn}
-              className="text-lg font-dongdong text-black"
+              className="text-lg font-louis text-black"
             >
               {button.label}
             </motion.span>

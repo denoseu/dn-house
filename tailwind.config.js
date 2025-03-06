@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'dongdong': ['dongdong', 'sans-serif'],
+        'louis' : ['louis', 'sans-serif'],
       },
     },
   },
