@@ -22,7 +22,7 @@ const NotFoundPage = () => {
           </h1>
           
           <p className="text-lg text-gray-600 font-dongdong max-w-lg mx-auto">
-            Bipbob has searched through 192913912010320132013131 websites, but this page is nowhere to be found.
+            Bipbop has searched through 192913912010320132013131 websites, but this page is nowhere to be found.
           </p>
 
           {/* Return Home Button */}
@@ -43,7 +43,7 @@ const NotFoundPage = () => {
 
           {/* 404 Image */}
           <img 
-            src="/images/404/bipbob-404.webp" 
+            src="/images/404/bipbop-404.webp" 
             alt="404" 
             className="mx-auto max-w-full md:max-w-md my-6"
           />
