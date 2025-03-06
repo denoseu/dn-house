@@ -9,6 +9,8 @@ const MenuPage = () => {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [postcards, setPostcards] = useState([]);
   const [{ x, y, scale }, api] = useSpring(() => ({ x: 0, y: 0, scale: 1 }));
+  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
   
   // Constants for postcard dimensions and boundary
   const POSTCARD_WIDTH = 500;
@@ -251,7 +253,7 @@ const MenuPage = () => {
   );
 
   return (
-    <div className="w-screen h-screen overflow-hidden bg-gray-100">
+    <div className="w-screen h-screen overflow-hidden bg-gray-50">
       <div className="sticky top-0 z-50">
         <Navbar />
       </div>
@@ -304,6 +306,34 @@ const MenuPage = () => {
             <p>Current zoom: {zoomDisplay.get()}%</p>
           </div>
         </div>
+        
+        {/* Popup */}
+        {showWelcomePopup && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowWelcomePopup(false)}></div>
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md mx-4 relative z-10 transform transition-all">
+              <h2 className="text-2xl font-louis font-bold mb-3 text-gray-800 text-center">Hey there!</h2>
+              <p className="text-gray-600 font-louis mb-6">
+                Densoup & Nopasoup have ventured through a world of flavors, and now it&apos;s your turn! Scroll through their delicious discoveries—who knows, your next favorite bite might be waiting for you!
+              </p>
+              <div className="flex justify-center">
+                <div 
+                  className="relative cursor-pointer transition-transform duration-300"
+                  style={{ transform: isButtonHovered ? 'scale(1.1)' : 'scale(1)' }}
+                  onMouseEnter={() => setIsButtonHovered(true)}
+                  onMouseLeave={() => setIsButtonHovered(false)}
+                  onClick={() => setShowWelcomePopup(false)}
+                >
+                  <img 
+                    src={isButtonHovered ? "/images/photo/explore.svg" : "/images/photo/explore.svg"} 
+                    alt="Let's Explore" 
+                    className="w-40" 
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
