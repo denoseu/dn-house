@@ -28,16 +28,16 @@ const Postcard = ({ imageSrc, text, stampNumber }) => {
 };
 
 // CONTOH PAKE
-const App = () => {
-  return (
-    <div>
-      <Postcard 
-        imageSrc="/images/demo.jpg" 
-        text="Hello this is our little cute cat named Georgie. We rlly love him" 
-        stampNumber={1}
-      />
-    </div>
-  );
-};
+// const App = () => {
+//   return (
+//     <div>
+//       <Postcard 
+//         imageSrc="/images/demo.jpg" 
+//         text="Hello this is our little cute cat named Georgie. We rlly love him" 
+//         stampNumber={1}
+//       />
+//     </div>
+//   );
+// };
 
-export default App;
+export default Postcard;
