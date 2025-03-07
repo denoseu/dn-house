@@ -78,8 +78,34 @@ const MenuPage = () => {
       "The Northern Lights in Iceland are magical.",
       "Sydney's harbor is even more beautiful in person!",
       "Hiking through the mountains in Switzerland.",
-      "The food in Thailand is absolutely delicious!"
+      "The food in Thailand is absolutely delicious!",
+      "Amazed by the ancient ruins in Athens.",
+      "The coffee culture in Vienna is unmatched!",
+      "Exploring the colorful markets in Marrakech.",
+      "Stunning fjords and waterfalls in Norway.",
+      "The Great Barrier Reef is a natural wonder!",
+      "Tasting wine in the vineyards of Bordeaux.",
+      "Desert safari in Dubai was an adventure.",
+      "The temples in Kyoto are so peaceful.",
+      "Dancing the night away in Rio de Janeiro!",
+      "The streets of Amsterdam are picture-perfect.",
+      "Machu Picchu exceeded all expectations.",
+      "The spices and aromas of Mumbai are intoxicating.",
+      "Wildlife spotting in the Serengeti was incredible!",
+      "Prague's medieval charm is captivating.",
+      "Island hopping in Greece - paradise found!",
+      "The fresh pastries in Budapest are to die for.",
+      "Kayaking through the canals of Venice.",
+      "The bustling street food scene in Seoul.",
+      "Marveling at the architecture in St. Petersburg.",
+      "The ancient medinas of Fez are like a maze!"
     ];
+    
+    // Shuffle the captions to randomize them
+    const shuffledTexts = [...sampleTexts].sort(() => Math.random() - 0.5);
+    
+    // Limit count to available captions
+    const actualCount = Math.min(count, shuffledTexts.length);
     
     // Helper to check if a position would overlap with existing items
     const wouldOverlap = (x, y, rotation, itemType) => {
@@ -122,7 +148,7 @@ const MenuPage = () => {
     };
     
     // Try to place each item
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < actualCount; i++) {
       let x, y, rotation, type;
       let isValid = false;
       let attempts = 0;
@@ -149,7 +175,7 @@ const MenuPage = () => {
           id: i,
           type: type,
           imageSrc: "/images/demo.jpg",
-          text: sampleTexts[i % sampleTexts.length],
+          text: shuffledTexts[i], // Use each caption only once
           stampNumber: Math.floor(Math.random() * 10) + 1,
           x,
           y,
