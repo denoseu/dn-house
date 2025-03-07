@@ -3,18 +3,21 @@ import { useGesture } from "@use-gesture/react";
 import { useSpring, animated } from "@react-spring/web";
 import Navbar from "../components/Navbar";
 import Postcard from "../components/Postcard";
+import Polaroid from "../components/Polaroid";
 
 const MenuPage = () => {
   const containerRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-  const [postcards, setPostcards] = useState([]);
+  const [items, setItems] = useState([]);
   const [{ x, y, scale }, api] = useSpring(() => ({ x: 0, y: 0, scale: 1 }));
   const [showWelcomePopup, setShowWelcomePopup] = useState(true);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
   
-  // Constants for postcard dimensions and boundary
+  // Constants for dimensions and boundary
   const POSTCARD_WIDTH = 500;
   const POSTCARD_HEIGHT = 350;
+  const POLAROID_WIDTH = 300;
+  const POLAROID_HEIGHT = 350;
   const BOUNDARY_PADDING = 50;
   const AREA_WIDTH = 3500;
   const AREA_HEIGHT = 3000;
@@ -45,11 +48,11 @@ const MenuPage = () => {
     };
   }, []);
 
-  // Generate postcards with non-overlapping positions
+  // Generate postcards and polaroids with non-overlapping positions
   useEffect(() => {
     if (containerSize.width > 0 && containerSize.height > 0) {
-      const postcardData = generateNonOverlappingPostcards(30);
-      setPostcards(postcardData);
+      const mixedItems = generateNonOverlappingItems(30);
+      setItems(mixedItems);
       
       // Center the view initially
       api.start({ 
@@ -60,9 +63,9 @@ const MenuPage = () => {
     }
   }, [containerSize, api]);
 
-  // Function to generate non-overlapping postcards with closer placement
-  const generateNonOverlappingPostcards = (count) => {
-    const cards = [];
+  // Function to generate non-overlapping postcards and polaroids with closer placement
+  const generateNonOverlappingItems = (count) => {
+    const items = [];
     
     // sample text content
     const sampleTexts = [
@@ -78,24 +81,31 @@ const MenuPage = () => {
       "The food in Thailand is absolutely delicious!"
     ];
     
-    // Helper to check if a position would overlap with existing cards
-    const wouldOverlap = (x, y, rotation) => {
+    // Helper to check if a position would overlap with existing items
+    const wouldOverlap = (x, y, rotation, itemType) => {
+      // Determine dimensions based on item type
+      const width = itemType === 'postcard' ? POSTCARD_WIDTH : POLAROID_WIDTH;
+      const height = itemType === 'postcard' ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
+      
       // Calculate the effective size considering rotation
       const rotationRad = Math.abs(rotation * Math.PI / 180);
-      const effectiveWidth = POSTCARD_WIDTH * Math.cos(rotationRad) + POSTCARD_HEIGHT * Math.sin(rotationRad);
-      const effectiveHeight = POSTCARD_WIDTH * Math.sin(rotationRad) + POSTCARD_HEIGHT * Math.cos(rotationRad);
+      const effectiveWidth = width * Math.cos(rotationRad) + height * Math.sin(rotationRad);
+      const effectiveHeight = width * Math.sin(rotationRad) + height * Math.cos(rotationRad);
       
-      // Check against all existing cards
-      for (const card of cards) {
-        const cardRotationRad = Math.abs(card.rotation * Math.PI / 180);
-        const cardEffectiveWidth = POSTCARD_WIDTH * Math.cos(cardRotationRad) + POSTCARD_HEIGHT * Math.sin(cardRotationRad);
-        const cardEffectiveHeight = POSTCARD_WIDTH * Math.sin(cardRotationRad) + POSTCARD_HEIGHT * Math.cos(cardRotationRad);
+      // Check against all existing items
+      for (const item of items) {
+        const itemWidth = item.type === 'postcard' ? POSTCARD_WIDTH : POLAROID_WIDTH;
+        const itemHeight = item.type === 'postcard' ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
+        
+        const cardRotationRad = Math.abs(item.rotation * Math.PI / 180);
+        const cardEffectiveWidth = itemWidth * Math.cos(cardRotationRad) + itemHeight * Math.sin(cardRotationRad);
+        const cardEffectiveHeight = itemWidth * Math.sin(cardRotationRad) + itemHeight * Math.cos(cardRotationRad);
         
         // Calculate centers
         const centerX1 = x + effectiveWidth / 2;
         const centerY1 = y + effectiveHeight / 2;
-        const centerX2 = card.x + cardEffectiveWidth / 2;
-        const centerY2 = card.y + cardEffectiveHeight / 2;
+        const centerX2 = item.x + cardEffectiveWidth / 2;
+        const centerY2 = item.y + cardEffectiveHeight / 2;
         
         // Calculate distance between centers
         const dx = Math.abs(centerX1 - centerX2);
@@ -111,26 +121,33 @@ const MenuPage = () => {
       return false;
     };
     
-    // Try to place each postcard
+    // Try to place each item
     for (let i = 0; i < count; i++) {
-      let x, y, rotation;
+      let x, y, rotation, type;
       let isValid = false;
       let attempts = 0;
       const maxAttempts = 200;
       
+      // Determine if this will be a postcard or polaroid (roughly 50/50 split)
+      type = Math.random() < 0.5 ? 'postcard' : 'polaroid';
+      
       while (!isValid && attempts < maxAttempts) {
         // Generate a random position within the area
-        x = BOUNDARY_PADDING + Math.random() * (AREA_WIDTH - POSTCARD_WIDTH - 2 * BOUNDARY_PADDING);
-        y = BOUNDARY_PADDING + Math.random() * (AREA_HEIGHT - POSTCARD_HEIGHT - 2 * BOUNDARY_PADDING);
+        const width = type === 'postcard' ? POSTCARD_WIDTH : POLAROID_WIDTH;
+        const height = type === 'postcard' ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
+        
+        x = BOUNDARY_PADDING + Math.random() * (AREA_WIDTH - width - 2 * BOUNDARY_PADDING);
+        y = BOUNDARY_PADDING + Math.random() * (AREA_HEIGHT - height - 2 * BOUNDARY_PADDING);
         rotation = Math.random() * 40 - 20; // Random rotation between -20 and 20 degrees
         
-        isValid = !wouldOverlap(x, y, rotation);
+        isValid = !wouldOverlap(x, y, rotation, type);
         attempts++;
       }
       
       if (isValid) {
-        cards.push({
+        items.push({
           id: i,
+          type: type,
           imageSrc: "/images/demo.jpg",
           text: sampleTexts[i % sampleTexts.length],
           stampNumber: Math.floor(Math.random() * 10) + 1,
@@ -141,7 +158,7 @@ const MenuPage = () => {
       }
     }
     
-    return cards;
+    return items;
   };
 
   // Combined gesture handler for both drag and pinch (zoom)
@@ -264,7 +281,7 @@ const MenuPage = () => {
         className="relative w-full h-full overflow-hidden"
         style={{ height: `calc(100vh - ${NAVBAR_HEIGHT}px)` }}
       >
-        {/* draggable and zoomable container for postcards */}
+        {/* draggable and zoomable container for postcards and polaroids */}
         <animated.div
           {...bind()}
           className="absolute origin-top-left cursor-grab active:cursor-grabbing"
@@ -277,7 +294,7 @@ const MenuPage = () => {
             touchAction: 'none'
           }}
         >
-          {postcards.map(({ id, imageSrc, text, stampNumber, x, y, rotation }) => (
+          {items.map(({ id, type, imageSrc, text, stampNumber, x, y, rotation }) => (
             <div
               key={id}
               className="absolute cursor-pointer hover:z-20 group"
@@ -289,11 +306,19 @@ const MenuPage = () => {
             >
               {/* zoom effect on hover */}
               <div className="transform group-hover:scale-110 transition-transform duration-300">
-                <Postcard 
-                  imageSrc={imageSrc} 
-                  text={text} 
-                  stampNumber={stampNumber} 
-                />
+                {type === 'postcard' ? (
+                  <Postcard 
+                    imageSrc={imageSrc} 
+                    text={text} 
+                    stampNumber={stampNumber} 
+                  />
+                ) : (
+                  <Polaroid
+                    imageSrc={imageSrc}
+                    text={text}
+                    stampNumber={stampNumber}
+                  />
+                )}
               </div>
             </div>
           ))}
