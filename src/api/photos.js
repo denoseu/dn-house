@@ -3,3 +3,16 @@ export async function fetchPhotos() {
   if (!res.ok) throw new Error('Failed to fetch photos');
   return res.json();
 }
+
+export async function uploadPhoto({ file, caption }) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('caption', caption);
+
+  const res = await fetch('http://localhost:5000/api/photos/upload', {
+    method: 'POST',
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to upload photo');
+  return res.json();
+}
