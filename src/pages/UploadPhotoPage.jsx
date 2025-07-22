@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { uploadPhoto } from "../api/photos";
+import Postcard from "../components/Postcard";
+import Polaroid from "../components/Polaroid";
 
 const UploadPhotoPage = () => {
   const [file, setFile] = useState(null);
@@ -12,6 +14,7 @@ const UploadPhotoPage = () => {
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [type, setType] = useState("postcard"); // default ke postcard
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -41,11 +44,12 @@ const UploadPhotoPage = () => {
     }
     setUploading(true);
     try {
-      await uploadPhoto({ file, caption });
+      await uploadPhoto({ file, caption, type });
       setSuccessMsg("Photo uploaded successfully!");
       setFile(null);
       setCaption("");
       setPreview(null);
+      setType("postcard"); // reset ke default
     } catch (err) {
       setErrorMsg(err.message || "Upload failed.");
     }
@@ -107,6 +111,33 @@ const UploadPhotoPage = () => {
       <Navbar />
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-50 p-4">
         <h1 className="text-3xl font-louis font-bold mb-6">Upload a Photo</h1>
+        
+        {/* Preview area */}
+        <div className="mb-8 flex flex-col items-center">
+          <div className="font-louis text-gray-700 mb-2">Preview</div>
+          <div className="shadow-lg rounded-lg bg-white p-4 flex items-center justify-center min-h-[350px] min-w-[300px]">
+            {preview ? (
+              type === "postcard" ? (
+                <Postcard
+                  imageSrc={preview}
+                  text={caption}
+                  stampNumber={1}
+                />
+              ) : (
+                <Polaroid
+                  imageSrc={preview}
+                  text={caption}
+                  stampNumber={1}
+                />
+              )
+            ) : (
+              <div className="text-gray-400 font-louis text-center">
+                No image selected.<br />Choose a file or use camera to preview.
+              </div>
+            )}
+          </div>
+        </div>
+
         <form
           className="bg-white rounded-lg shadow-md p-6 w-full max-w-md flex flex-col gap-4"
           onSubmit={handleSubmit}
@@ -182,6 +213,34 @@ const UploadPhotoPage = () => {
               disabled={uploading}
               placeholder="Enter a caption..."
             />
+          </div>
+          {/* Type toggle */}
+          <div>
+            <label className="block font-louis mb-2">Type</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-1 font-louis">
+                <input
+                  type="radio"
+                  name="type"
+                  value="postcard"
+                  checked={type === "postcard"}
+                  onChange={() => setType("postcard")}
+                  disabled={uploading}
+                />
+                Postcard
+              </label>
+              <label className="flex items-center gap-1 font-louis">
+                <input
+                  type="radio"
+                  name="type"
+                  value="polaroid"
+                  checked={type === "polaroid"}
+                  onChange={() => setType("polaroid")}
+                  disabled={uploading}
+                />
+                Polaroid
+              </label>
+            </div>
           </div>
           {/* Submit button */}
           <button

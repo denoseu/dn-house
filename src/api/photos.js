@@ -4,10 +4,11 @@ export async function fetchPhotos() {
   return res.json();
 }
 
-export async function uploadPhoto({ file, caption }) {
+export async function uploadPhoto({ file, caption, type }) {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('caption', caption);
+  formData.append('type', type || "postcard"); // default ke postcard jika kosong
 
   const res = await fetch('http://localhost:5000/api/photos/upload', {
     method: 'POST',

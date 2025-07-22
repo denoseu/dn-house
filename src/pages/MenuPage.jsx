@@ -123,7 +123,7 @@ const MenuPage = () => {
       };
 
       const mapped = photos.map((photo, i) => {
-        const type = Math.random() < 0.5 ? "postcard" : "polaroid";
+        const type = photo.type || "postcard"; // gunakan type dari backend, default postcard
         const { x, y } = getRandomPos(type);
         return {
           id: photo._id || i,
