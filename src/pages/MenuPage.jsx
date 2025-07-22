@@ -4,14 +4,18 @@ import { useSpring, animated } from "@react-spring/web";
 import Navbar from "../components/Navbar";
 import Postcard from "../components/Postcard";
 import Polaroid from "../components/Polaroid";
+import { fetchPhotos } from "../api/photos"; // tambahkan import
 
 const MenuPage = () => {
   const containerRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [items, setItems] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [{ x, y, scale }, api] = useSpring(() => ({ x: 0, y: 0, scale: 1 }));
   const [showWelcomePopup, setShowWelcomePopup] = useState(true);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [loadingPhotos, setLoadingPhotos] = useState(true);
+  const [errorPhotos, setErrorPhotos] = useState(null);
   
   // Constants for dimensions and boundary
   const POSTCARD_WIDTH = 500;
@@ -48,144 +52,102 @@ const MenuPage = () => {
     };
   }, []);
 
-  // Generate postcards and polaroids with non-overlapping positions
+  // Fetch photos from backend
   useEffect(() => {
-    if (containerSize.width > 0 && containerSize.height > 0) {
-      const mixedItems = generateNonOverlappingItems(30);
-      setItems(mixedItems);
-      
-      // Center the view initially
-      api.start({ 
-        x: (containerSize.width - AREA_WIDTH) / 2,
-        y: (containerSize.height - AREA_HEIGHT) / 2,
-        scale: 1
-      });
-    }
-  }, [containerSize, api]);
-
-  // Function to generate non-overlapping postcards and polaroids with closer placement
-  const generateNonOverlappingItems = (count) => {
-    const items = [];
-    
-    // sample text content
-    const sampleTexts = [
-      "Greetings from Paris! The Eiffel Tower is magnificent.",
-      "Hello from Tokyo! Experiencing the cherry blossoms.",
-      "New York City is so vibrant and full of energy!",
-      "Peaceful days in Bali. The beaches are incredible.",
-      "Barcelona's architecture is simply breathtaking.",
-      "Enjoying the history and culture in Rome.",
-      "The Northern Lights in Iceland are magical.",
-      "Sydney's harbor is even more beautiful in person!",
-      "Hiking through the mountains in Switzerland.",
-      "The food in Thailand is absolutely delicious!",
-      "Amazed by the ancient ruins in Athens.",
-      "The coffee culture in Vienna is unmatched!",
-      "Exploring the colorful markets in Marrakech.",
-      "Stunning fjords and waterfalls in Norway.",
-      "The Great Barrier Reef is a natural wonder!",
-      "Tasting wine in the vineyards of Bordeaux.",
-      "Desert safari in Dubai was an adventure.",
-      "The temples in Kyoto are so peaceful.",
-      "Dancing the night away in Rio de Janeiro!",
-      "The streets of Amsterdam are picture-perfect.",
-      "Machu Picchu exceeded all expectations.",
-      "The spices and aromas of Mumbai are intoxicating.",
-      "Wildlife spotting in the Serengeti was incredible!",
-      "Prague's medieval charm is captivating.",
-      "Island hopping in Greece - paradise found!",
-      "The fresh pastries in Budapest are to die for.",
-      "Kayaking through the canals of Venice.",
-      "The bustling street food scene in Seoul.",
-      "Marveling at the architecture in St. Petersburg.",
-      "The ancient medinas of Fez are like a maze!"
-    ];
-    
-    // Shuffle the captions to randomize them
-    const shuffledTexts = [...sampleTexts].sort(() => Math.random() - 0.5);
-    
-    // Limit count to available captions
-    const actualCount = Math.min(count, shuffledTexts.length);
-    
-    // Helper to check if a position would overlap with existing items
-    const wouldOverlap = (x, y, rotation, itemType) => {
-      // Determine dimensions based on item type
-      const width = itemType === 'postcard' ? POSTCARD_WIDTH : POLAROID_WIDTH;
-      const height = itemType === 'postcard' ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
-      
-      // Calculate the effective size considering rotation
-      const rotationRad = Math.abs(rotation * Math.PI / 180);
-      const effectiveWidth = width * Math.cos(rotationRad) + height * Math.sin(rotationRad);
-      const effectiveHeight = width * Math.sin(rotationRad) + height * Math.cos(rotationRad);
-      
-      // Check against all existing items
-      for (const item of items) {
-        const itemWidth = item.type === 'postcard' ? POSTCARD_WIDTH : POLAROID_WIDTH;
-        const itemHeight = item.type === 'postcard' ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
-        
-        const cardRotationRad = Math.abs(item.rotation * Math.PI / 180);
-        const cardEffectiveWidth = itemWidth * Math.cos(cardRotationRad) + itemHeight * Math.sin(cardRotationRad);
-        const cardEffectiveHeight = itemWidth * Math.sin(cardRotationRad) + itemHeight * Math.cos(cardRotationRad);
-        
-        // Calculate centers
-        const centerX1 = x + effectiveWidth / 2;
-        const centerY1 = y + effectiveHeight / 2;
-        const centerX2 = item.x + cardEffectiveWidth / 2;
-        const centerY2 = item.y + cardEffectiveHeight / 2;
-        
-        // Calculate distance between centers
-        const dx = Math.abs(centerX1 - centerX2);
-        const dy = Math.abs(centerY1 - centerY2);
-        
-        // Check if centers are too close (with reduced buffer for closer packing)
-        if (dx < (effectiveWidth + cardEffectiveWidth) / 2 - OVERLAP_BUFFER && 
-            dy < (effectiveHeight + cardEffectiveHeight) / 2 - OVERLAP_BUFFER) {
-          return true;
+    let ignore = false;
+    setLoadingPhotos(true);
+    fetchPhotos()
+      .then(data => {
+        if (!ignore) {
+          // log
+          console.log("Fetched photos from API:", data);
+          setPhotos(Array.isArray(data.photos) ? data.photos : []);
+          setLoadingPhotos(false);
         }
-      }
+      })
+      .catch(err => {
+        if (!ignore) {
+          // log
+          console.error("Error fetch foto:", err);
+
+          setErrorPhotos(err.message || "Failed to load photos");
+          setLoadingPhotos(false);
+        }
+      });
+    return () => { ignore = true; };
+  }, []);
+
+  // // Generate postcards and polaroids with non-overlapping positions
+  // useEffect(() => {
+  //   if (containerSize.width > 0 && containerSize.height > 0) {
+  //     const mixedItems = generateNonOverlappingItems(30);
+  //     setItems(mixedItems);
       
-      return false;
-    };
-    
-    // Try to place each item
-    for (let i = 0; i < actualCount; i++) {
-      let x, y, rotation, type;
-      let isValid = false;
-      let attempts = 0;
-      const maxAttempts = 200;
-      
-      // Determine if this will be a postcard or polaroid (roughly 50/50 split)
-      type = Math.random() < 0.5 ? 'postcard' : 'polaroid';
-      
-      while (!isValid && attempts < maxAttempts) {
-        // Generate a random position within the area
-        const width = type === 'postcard' ? POSTCARD_WIDTH : POLAROID_WIDTH;
-        const height = type === 'postcard' ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
-        
-        x = BOUNDARY_PADDING + Math.random() * (AREA_WIDTH - width - 2 * BOUNDARY_PADDING);
-        y = BOUNDARY_PADDING + Math.random() * (AREA_HEIGHT - height - 2 * BOUNDARY_PADDING);
-        rotation = Math.random() * 40 - 20; // Random rotation between -20 and 20 degrees
-        
-        isValid = !wouldOverlap(x, y, rotation, type);
-        attempts++;
-      }
-      
-      if (isValid) {
-        items.push({
-          id: i,
-          type: type,
-          imageSrc: "/images/demo.jpg",
-          text: shuffledTexts[i], // Use each caption only once
-          stampNumber: Math.floor(Math.random() * 10) + 1,
+  //     // Center the view initially
+  //     api.start({ 
+  //       x: (containerSize.width - AREA_WIDTH) / 2,
+  //       y: (containerSize.height - AREA_HEIGHT) / 2,
+  //       scale: 1
+  //     });
+  //   }
+  // }, [containerSize, api]);
+
+  // Generate positions for backend photos
+  useEffect(() => {
+    // log photos
+    console.log("Photos loaded:", photos);
+    if (
+      containerSize.width > 0 &&
+      containerSize.height > 0 &&
+      photos.length > 0
+    ) {
+      // Generate random positions for each photo (tidak overlap, simple version)
+      const used = [];
+      const getRandomPos = (type) => {
+        const width = type === "postcard" ? POSTCARD_WIDTH : POLAROID_WIDTH;
+        const height = type === "postcard" ? POSTCARD_HEIGHT : POLAROID_HEIGHT;
+        let x, y, tries = 0;
+        do {
+          x = BOUNDARY_PADDING + Math.random() * (AREA_WIDTH - width - 2 * BOUNDARY_PADDING);
+          y = BOUNDARY_PADDING + Math.random() * (AREA_HEIGHT - height - 2 * BOUNDARY_PADDING);
+          tries++;
+        } while (
+          used.some(
+            (pos) =>
+              Math.abs(pos.x - x) < width &&
+              Math.abs(pos.y - y) < height
+          ) && tries < 50
+        );
+        used.push({ x, y });
+        return { x, y };
+      };
+
+      const mapped = photos.map((photo, i) => {
+        const type = Math.random() < 0.5 ? "postcard" : "polaroid";
+        const { x, y } = getRandomPos(type);
+        return {
+          id: photo._id || i,
+          type,
+          imageSrc: photo.url || "/images/demo.jpg",
+          text: photo.caption || "",
+          stampNumber: (i % 10) + 1,
           x,
           y,
-          rotation
-        });
-      }
+          rotation: Math.random() * 40 - 20,
+        };
+      });
+      // log mapped
+      console.log("Mapped photos with positions:", mapped);
+      setItems(mapped);
+
+      // Center the view initially
+      api.start({
+        x: (containerSize.width - AREA_WIDTH) / 2,
+        y: (containerSize.height - AREA_HEIGHT) / 2,
+        scale: 1,
+      });
     }
-    
-    return items;
-  };
+  }, [containerSize, photos, api]);
 
   // Combined gesture handler for both drag and pinch (zoom)
   const bind = useGesture(
@@ -320,7 +282,8 @@ const MenuPage = () => {
             touchAction: 'none'
           }}
         >
-          {items.map(({ id, type, imageSrc, text, stampNumber, x, y, rotation }) => (
+          {/* Render backend photos */}
+          {!loadingPhotos && !errorPhotos && items.length > 0 && items.map(({ id, type, imageSrc, text, stampNumber, x, y, rotation }) => (
             <div
               key={id}
               className="absolute cursor-pointer hover:z-20 group"
@@ -330,7 +293,6 @@ const MenuPage = () => {
                 transition: 'transform 0.3s ease-out',
               }}
             >
-              {/* zoom effect on hover */}
               <div className="transform group-hover:scale-110 transition-transform duration-300">
                 {type === 'postcard' ? (
                   <Postcard 
@@ -348,6 +310,12 @@ const MenuPage = () => {
               </div>
             </div>
           ))}
+          {/* Jika gagal fetch, fallback ke dummy */}
+          {((errorPhotos || items.length === 0) && !loadingPhotos) && (
+            <div className="text-center text-gray-500 font-louis mt-10">
+              Failed to load photos from backend. Showing nothing or you can uncomment dummy generator.
+            </div>
+          )}
         </animated.div>
         
         <div className="absolute bottom-12 right-4 bg-white p-2 rounded-lg opacity-70 hover:opacity-100 transition-opacity z-40">
