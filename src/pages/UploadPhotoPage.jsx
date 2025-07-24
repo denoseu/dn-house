@@ -16,13 +16,21 @@ const UploadPhotoPage = () => {
   const [cameraActive, setCameraActive] = useState(false);
   const [type, setType] = useState("postcard");
   const [screenSize, setScreenSize] = useState('desktop');
+  const [facingMode, setFacingMode] = useState('environment'); // 'user' for front, 'environment' for back
+  const [isMobile, setIsMobile] = useState(false);
+  const [availableCameras, setAvailableCameras] = useState([]);
 
-  // Handle screen size changes
+  // Handle screen size changes and detect mobile
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
+      const width = window.innerWidth;
+      const isMobileDevice = width < 640 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      setIsMobile(isMobileDevice);
+      
+      if (width < 640) {
         setScreenSize('mobile');
-      } else if (window.innerWidth < 768) {
+      } else if (width < 768) {
         setScreenSize('tablet');
       } else {
         setScreenSize('desktop');
@@ -32,6 +40,23 @@ const UploadPhotoPage = () => {
     handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Check available cameras on component mount
+  useEffect(() => {
+    const checkAvailableCameras = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        setAvailableCameras(videoDevices);
+      } catch (err) {
+        console.log('Could not enumerate devices:', err);
+      }
+    };
+
+    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+      checkAvailableCameras();
+    }
   }, []);
 
   // Get scale factor based on screen size
@@ -85,20 +110,56 @@ const UploadPhotoPage = () => {
     setUploading(false);
   };
 
+  // Start camera with specified facing mode
+  const startCamera = async (facing = facingMode) => {
+    try {
+      // Stop any existing stream first
+      if (videoRef.current && videoRef.current.srcObject) {
+        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      }
+
+      const constraints = {
+        video: {
+          facingMode: facing,
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+      setFacingMode(facing);
+    } catch (err) {
+      console.error('Camera error:', err);
+      throw err;
+    }
+  };
+
   // Handle open camera
   const handleOpenCamera = async () => {
     setErrorMsg("");
     setSuccessMsg("");
     setCameraActive(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
+      await startCamera();
     } catch (err) {
       setErrorMsg("Cannot access camera.");
       setCameraActive(false);
+    }
+  };
+
+  // Handle flip camera
+  const handleFlipCamera = async () => {
+    if (!cameraActive) return;
+    
+    const newFacingMode = facingMode === 'user' ? 'environment' : 'user';
+    try {
+      await startCamera(newFacingMode);
+    } catch (err) {
+      setErrorMsg("Cannot switch camera.");
     }
   };
 
@@ -111,7 +172,14 @@ const UploadPhotoPage = () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // If using front camera, flip the image horizontally
+    if (facingMode === 'user') {
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+    } else {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    }
 
     canvas.toBlob((blob) => {
       if (blob) {
@@ -244,7 +312,7 @@ const UploadPhotoPage = () => {
                       {cameraActive && (
                         <button
                           type="button"
-                          className="px-4 py-3 bg-gray-400 text-white rounded-full font-semibold hover:bg-gray-600 transition-all duration-200 transform hover:scale-105 shadow"
+                          className="px-4 py-3 bg-gray-400 text-white rounded-full font-louis font-semibold hover:bg-gray-600 transition-all duration-200 transform hover:scale-105 shadow"
                           onClick={handleCloseCamera}
                         >
                           Close
@@ -256,18 +324,61 @@ const UploadPhotoPage = () => {
                   {/* Camera preview - Responsive */}
                   {cameraActive && (
                     <div className="flex flex-col items-center space-y-3 p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
-                      <video 
-                        ref={videoRef} 
-                        className="w-full max-w-sm h-auto rounded-xl border-4 border-white shadow" 
-                        autoPlay 
-                      />
-                      <button
-                        type="button"
-                        className="bg-gray-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-black transition-all duration-200 transform hover:scale-105 shadow"
-                        onClick={handleCapture}
-                      >
-                        Snap Photo!
-                      </button>
+                      <div className="relative">
+                        <video 
+                          ref={videoRef} 
+                          className={`w-full max-w-sm h-auto rounded-xl border-4 border-white shadow ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`}
+                          autoPlay 
+                        />
+                        
+                        {/* Camera flip button - only show on mobile or when multiple cameras available */}
+                        {(isMobile || availableCameras.length > 1) && (
+                          <button
+                            type="button"
+                            className="absolute top-3 right-3 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all duration-200"
+                            onClick={handleFlipCamera}
+                            title="Flip camera"
+                          >
+                            <svg 
+                              className="w-5 h-5" 
+                              fill="none" 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-1l-1-2H7l-1 2H5a2 2 0 00-2 2v0" 
+                              />
+                              <circle cx={12} cy={13} r={3} />
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M16 6l2 2-2 2M8 6L6 8l2 2" 
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="flex gap-2 items-center">
+                        <button
+                          type="button"
+                          className="bg-gray-800 text-white px-6 py-3 rounded-full font-louis font-semibold hover:bg-black transition-all duration-200 transform hover:scale-105 shadow"
+                          onClick={handleCapture}
+                        >
+                          Snap Photo!
+                        </button>
+                        
+                        {/* Camera mode indicator */}
+                        {isMobile && (
+                          <span className="text-xs text-gray-600 bg-white px-2 py-1 rounded-full border">
+                            {facingMode === 'user' ? 'Front' : 'Back'} cam
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
 
