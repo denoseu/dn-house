@@ -110,10 +110,8 @@ const UploadPhotoPage = () => {
       <title>Upload Photo</title>
       <Navbar />
       <div className="min-h-[calc(100vh-80px)] bg-white p-4 relative overflow-hidden">
-        {/* Neutral background accents */}
-        
-        <div className="flex flex-col items-center justify-center max-w-4xl mx-auto relative z-10">
-          {/* Main heading with neutral styling */}
+        <div className="max-w-4xl mx-auto relative z-10">
+          {/* Main heading */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-black font-louis relative">
               Share a Memory!
@@ -123,19 +121,18 @@ const UploadPhotoPage = () => {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8 w-full items-start">
-            {/* Preview area - styled like a photo frame */}
-            <div className="flex-1 flex flex-col items-center">
-              <div className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 font-louis">
-                Preview 
-              </div>
-              
-              <div className="relative bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200">
-                {/* Decorative neutral corners */}
-                
-                <div className="flex items-center justify-center min-h-[350px] min-w-[300px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
-                  {preview ? (
-                    type === "postcard" ? (
+          {/* Preview area - Fixed size at the top */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 font-louis">
+              Preview 
+            </div>
+            
+            <div className="relative bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200">
+              {/* Fixed size container - optimized for postcard dimensions */}
+              <div className="flex items-center justify-center w-[500px] h-[400px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 overflow-hidden">
+                {preview ? (
+                  <div className="flex items-center justify-center w-full h-full">
+                    {type === "postcard" ? (
                       <Postcard
                         imageSrc={preview}
                         text={caption}
@@ -147,23 +144,25 @@ const UploadPhotoPage = () => {
                         text={caption}
                         stampNumber={1}
                       />
-                    )
-                  ) : (
-                    <div className="text-gray-400 text-center p-8 font-louis">
-                      <div className="text-lg font-medium">
-                        No image selected yet!
-                      </div>
-                      <div className="text-sm mt-2">
-                        Choose a file or snap a photo to see the magic
-                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-gray-400 text-center p-8 font-louis">
+                    <div className="text-lg font-medium">
+                      No image selected yet!
                     </div>
-                  )}
-                </div>
+                    <div className="text-sm mt-2">
+                      Choose a file or snap a photo to see the magic
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
+          </div>
 
-            {/* Upload form - neutral style */}
-            <div className="flex-1 max-w-md w-full">
+          {/* Upload form - Below preview, centered */}
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
               <form
                 className="bg-white rounded-3xl shadow-xl p-8 border-4 border-gray-200 relative overflow-hidden"
                 onSubmit={handleSubmit}
@@ -241,7 +240,7 @@ const UploadPhotoPage = () => {
                       <img src={preview} alt="Preview" className="max-h-32 rounded-xl border-4 border-white shadow" />
                       <button
                         type="button"
-                        className="text-red-500 font-semibold underline hover:text-red-700 transition-colors"
+                        className="text-red-500 font-louis font-semibold underline hover:text-red-700 transition-colors"
                         onClick={() => { setFile(null); setPreview(null); }}
                         disabled={uploading}
                       >
