@@ -183,7 +183,7 @@ const UploadPhotoPage = () => {
                         accept="image/*"
                         ref={fileInputRef}
                         onChange={handleFileChange}
-                        className="block w-full text-sm text-gray-700 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-800 hover:file:bg-gray-200 file:transition-colors cursor-pointer"
+                        className="block w-full text-sm text-gray-700 font-louis file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-800 hover:file:bg-gray-200 file:transition-colors cursor-pointer file:font-louis"
                         disabled={uploading}
                       />
                     </div>
