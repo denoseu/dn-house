@@ -1,5 +1,5 @@
 export async function fetchPhotos() {
-  const res = await fetch('http://localhost:5000/api/photos');
+  const res = await fetch('https://dn-house-backend.vercel.app/api/photos');
   if (!res.ok) throw new Error('Failed to fetch photos');
   return res.json();
 }
@@ -10,7 +10,7 @@ export async function uploadPhoto({ file, caption, type }) {
   formData.append('caption', caption);
   formData.append('type', type || "postcard"); // default ke postcard jika kosong
 
-  const res = await fetch('http://localhost:5000/api/photos/upload', {
+  const res = await fetch('https://dn-house-backend.vercel.app/api/photos/upload', {
     method: 'POST',
     body: formData,
   });
