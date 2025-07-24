@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { uploadPhoto } from "../api/photos";
 import Postcard from "../components/Postcard";
@@ -15,6 +15,33 @@ const UploadPhotoPage = () => {
   const videoRef = useRef(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [type, setType] = useState("postcard");
+  const [screenSize, setScreenSize] = useState('desktop');
+
+  // Handle screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setScreenSize('mobile');
+      } else if (window.innerWidth < 768) {
+        setScreenSize('tablet');
+      } else {
+        setScreenSize('desktop');
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Get scale factor based on screen size
+  const getScaleFactor = () => {
+    switch (screenSize) {
+      case 'mobile': return 0.75;
+      case 'tablet': return 0.85;
+      default: return 1;
+    }
+  };
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -38,10 +65,12 @@ const UploadPhotoPage = () => {
     e.preventDefault();
     setSuccessMsg("");
     setErrorMsg("");
+
     if (!file) {
       setErrorMsg("Please select an image file.");
       return;
     }
+
     setUploading(true);
     try {
       await uploadPhoto({ file, caption, type });
@@ -76,12 +105,14 @@ const UploadPhotoPage = () => {
   // Handle capture photo from camera
   const handleCapture = () => {
     if (!videoRef.current) return;
+
     const video = videoRef.current;
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
     canvas.toBlob((blob) => {
       if (blob) {
         const imgFile = new File([blob], "captured.jpg", { type: "image/jpeg" });
@@ -112,43 +143,51 @@ const UploadPhotoPage = () => {
       <div className="min-h-[calc(100vh-80px)] bg-white p-4 relative overflow-hidden">
         <div className="max-w-4xl mx-auto relative z-10">
           {/* Main heading */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-black font-louis relative">
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-black font-louis relative">
               Share a Memory!
             </h1>
-            <p className="text-gray-700 text-lg font-louis">
+            <p className="text-gray-700 text-base md:text-lg font-louis">
               Upload a photo and it'll appear in the menu! 
             </p>
           </div>
 
-          {/* Preview area - Fixed size at the top */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 font-louis">
+          {/* Preview area - Responsive size */}
+          <div className="flex flex-col items-center mb-6 md:mb-8">
+            <div className="text-lg md:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 font-louis">
               Preview 
             </div>
             
-            <div className="relative bg-white p-6 rounded-3xl shadow-xl border-4 border-gray-200">
-              {/* Fixed size container - optimized for postcard dimensions */}
-              <div className="flex items-center justify-center w-[500px] h-[400px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 overflow-hidden">
+            <div className="relative bg-white p-3 md:p-6 rounded-3xl shadow-xl border-4 border-gray-200 w-full max-w-lg">
+              {/* Responsive container with aspect ratio */}
+              <div className="flex items-center justify-center w-full aspect-[5/4] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300 overflow-hidden">
                 {preview ? (
-                  <div className="flex items-center justify-center w-full h-full">
-                    {type === "postcard" ? (
-                      <Postcard
-                        imageSrc={preview}
-                        text={caption}
-                        stampNumber={1}
-                      />
-                    ) : (
-                      <Polaroid
-                        imageSrc={preview}
-                        text={caption}
-                        stampNumber={1}
-                      />
-                    )}
+                  <div className="flex items-center justify-center w-full h-full p-1 md:p-2">
+                    <div 
+                      className="flex items-center justify-center"
+                      style={{
+                        transform: `scale(${getScaleFactor()})`,
+                        transformOrigin: 'center'
+                      }}
+                    >
+                      {type === "postcard" ? (
+                        <Postcard
+                          imageSrc={preview}
+                          text={caption}
+                          stampNumber={1}
+                        />
+                      ) : (
+                        <Polaroid
+                          imageSrc={preview}
+                          text={caption}
+                          stampNumber={1}
+                        />
+                      )}
+                    </div>
                   </div>
                 ) : (
-                  <div className="text-gray-400 text-center p-8 font-louis">
-                    <div className="text-lg font-medium">
+                  <div className="text-gray-400 text-center p-4 md:p-8 font-louis">
+                    <div className="text-base md:text-lg font-medium">
                       No image selected yet!
                     </div>
                     <div className="text-sm mt-2">
@@ -164,7 +203,7 @@ const UploadPhotoPage = () => {
           <div className="flex justify-center">
             <div className="w-full max-w-md">
               <form
-                className="bg-white rounded-3xl shadow-xl p-8 border-4 border-gray-200 relative overflow-hidden"
+                className="bg-white rounded-3xl shadow-xl p-6 md:p-8 border-4 border-gray-200 relative overflow-hidden"
                 onSubmit={handleSubmit}
               >
                 {/* Decorative neutral header */}
@@ -214,15 +253,13 @@ const UploadPhotoPage = () => {
                     </div>
                   </div>
 
-                  {/* Camera preview */}
+                  {/* Camera preview - Responsive */}
                   {cameraActive && (
                     <div className="flex flex-col items-center space-y-3 p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">
                       <video 
                         ref={videoRef} 
-                        width={280} 
-                        height={210} 
+                        className="w-full max-w-sm h-auto rounded-xl border-4 border-white shadow" 
                         autoPlay 
-                        className="rounded-xl border-4 border-white shadow" 
                       />
                       <button
                         type="button"
@@ -234,10 +271,14 @@ const UploadPhotoPage = () => {
                     </div>
                   )}
 
-                  {/* Image preview in form */}
+                  {/* Image preview in form - Responsive */}
                   {preview && (
                     <div className="flex flex-col items-center space-y-3 p-4 bg-gray-100 rounded-2xl border-2 border-gray-200">
-                      <img src={preview} alt="Preview" className="max-h-32 rounded-xl border-4 border-white shadow" />
+                      <img 
+                        src={preview} 
+                        alt="Preview" 
+                        className="max-h-24 md:max-h-32 w-auto rounded-xl border-4 border-white shadow" 
+                      />
                       <button
                         type="button"
                         className="text-red-500 font-louis font-semibold underline hover:text-red-700 transition-colors"
