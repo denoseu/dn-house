@@ -374,7 +374,7 @@ const UploadPhotoPage = () => {
                         
                         {/* Camera mode indicator */}
                         {isMobile && (
-                          <span className="text-xs text-gray-600 bg-white px-2 py-1 rounded-full border">
+                          <span className="text-xs text-gray-600 font-louis bg-white px-2 py-1 rounded-full border">
                             {facingMode === 'user' ? 'Front' : 'Back'} cam
                           </span>
                         )}
