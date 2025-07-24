@@ -36,20 +36,24 @@ const GuestbookPage = () => {
                     <p className="text-center text-lg md:text-xl text-gray-700 font-louis mb-20">
                         See what our lovely guests wrote for us!
                     </p>
+
                     {loading && (
                         <div className="flex justify-center items-center py-12">
                             <div className="w-10 h-10 border-4 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
                             <span className="ml-4 text-gray-700 font-louis text-xl">Loading...</span>
                         </div>
                     )}
+
                     {error && (
                         <div className="text-center text-red-500 font-louis font-bold mb-6">{error}</div>
                     )}
+
                     {!loading && !error && entries.length === 0 && (
                         <div className="text-center text-gray-400 font-louis text-lg mt-12">
                             No entries yet. Be the first to write a letter!
                         </div>
                     )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-16 justify-items-center">
                         {entries.map((entry, idx) => (
                             <div
@@ -74,6 +78,15 @@ const GuestbookPage = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* Thank you message */}
+                    {!loading && !error && entries.length > 0 && (
+                        <div className="text-center mt-16 mb-8">
+                            <p className="text-md md:text-lg text-gray-600 font-louis italic">
+                                Thanks for visiting our site and leaving some notes! We appreciate all the wonderful messages from our amazing visitors. Your kind words mean the world to us!
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </>
