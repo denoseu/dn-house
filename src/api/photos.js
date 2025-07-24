@@ -1,8 +1,14 @@
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = "https://dn-house-backend.vercel.app";
 
 export async function fetchPhotos() {
   const res = await fetch(`${BACKEND_URL}/api/photos`);
   if (!res.ok) throw new Error('Failed to fetch photos');
+  return res.json();
+}
+
+export async function fetchPhotoById(id) {
+  const res = await fetch(`${BACKEND_URL}/api/photos/${id}`);
+  if (!res.ok) throw new Error('Failed to fetch photo');
   return res.json();
 }
 
@@ -17,5 +23,21 @@ export async function uploadPhoto({ file, caption, type }) {
     body: formData,
   });
   if (!res.ok) throw new Error('Failed to upload photo');
+  return res.json();
+}
+
+export async function deletePhoto(id) {
+  const res = await fetch(`${BACKEND_URL}/api/photos/${id}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Failed to delete photo');
+  return res.json();
+}
+
+export async function refreshPhotoUrl(id) {
+  const res = await fetch(`${BACKEND_URL}/api/photos/${id}/refresh-url`, {
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Failed to refresh photo URL');
   return res.json();
 }
