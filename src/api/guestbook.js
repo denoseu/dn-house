@@ -1,4 +1,4 @@
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = "https://dn-house-backend.vercel.app";
 
 export async function fetchGuestbook() {
   const res = await fetch(`${BACKEND_URL}/api/guestbook`);
@@ -13,7 +13,7 @@ export async function fetchGuestbookById(id) {
 }
 
 export async function createGuestbookEntry({ from, subject, message }) {
-  const res = await fetch(`${BACKEND_URL}/api/guestbook`, {
+  const res = await fetch(`${BACKEND_URL}/api/guestbook/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

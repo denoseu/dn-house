@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
+import { createGuestbookEntry } from "../api/guestbook";
 
 const LetterPage = () => {
-  const [to, setTo] = useState('');
+  const [from, setFrom] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSendHovered, setIsSendHovered] = useState(false);
   const [isTrashHovered, setIsTrashHovered] = useState(false);
+
+  // State untuk loading dan error feedback
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState(null);
+  const [sendSuccess, setSendSuccess] = useState(false);
 
   // Animations
   const fadeIn = (delay = 0) => ({
@@ -26,9 +32,25 @@ const LetterPage = () => {
 
   // Reset input fields
   const handleReset = () => {
-    setTo('');
+    setFrom('');
     setSubject('');
     setMessage('');
+  };
+
+  // Handler untuk tombol Send
+  const handleSend = async () => {
+    setIsSending(true);
+    setSendError(null);
+    setSendSuccess(false);
+    try {
+      await createGuestbookEntry({ from, subject, message });
+      setSendSuccess(true);
+      handleReset();
+    } catch (err) {
+      setSendError('Failed to send letter. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -77,9 +99,9 @@ const LetterPage = () => {
           >
             <input
               type="text"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              placeholder="To"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              placeholder="From"
               className="absolute top-[46px] left-[23%] w-[70%] bg-transparent border-none focus:outline-none 
                 text-gray-700 text-sm md:text-lg font-louis pointer-events-auto
                 md:top-[115px] md:left-[23%] md:w-[80%]"
@@ -111,11 +133,13 @@ const LetterPage = () => {
             className="absolute bottom-[20%] left-[15%] md:bottom-[20%] md:left-[15%] z-10"
             onMouseEnter={() => setIsSendHovered(true)}
             onMouseLeave={() => setIsSendHovered(false)}
+            onClick={handleSend}
+            disabled={isSending}
           >
             <img 
               src={isSendHovered ? "/images/mail/send.svg" : "/images/mail/send.svg"} 
               alt="Send" 
-              className="w-16 md:w-32"
+              className={`w-16 md:w-32 ${isSending ? 'opacity-50' : ''}`}
             />
           </motion.button>
 
@@ -136,6 +160,14 @@ const LetterPage = () => {
             />
           </motion.button>
         </motion.div>
+
+        {/* Feedback setelah kirim */}
+        {sendSuccess && (
+          <div className="text-green-600 text-center mt-2 font-louis">Letter sent!</div>
+        )}
+        {sendError && (
+          <div className="text-red-600 text-center mt-2 font-louis">{sendError}</div>
+        )}
       </motion.div>
     </>
   );
