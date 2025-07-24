@@ -26,6 +26,21 @@ export async function uploadPhoto({ file, caption, type }) {
   return res.json();
 }
 
+export async function updatePhoto(id, { file, caption, type }) {
+  const formData = new FormData();
+  if (file) {
+    formData.append('file', file);
+  }
+  formData.append('caption', caption || '');
+  formData.append('type', type || 'postcard');
+  const res = await fetch(`${BACKEND_URL}/api/photos/update/${id}`, {
+    method: 'PUT',
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Failed to update photo');
+  return res.json();
+}
+
 export async function deletePhoto(id) {
   const res = await fetch(`${BACKEND_URL}/api/photos/${id}`, {
     method: 'DELETE',
